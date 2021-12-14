@@ -190,6 +190,32 @@ extension HTTPClient {
             self.tlsConfiguration = tlsConfiguration
         }
 
+        /// Create an HTTP `Request`.
+        ///
+        /// - parameters:
+        ///     - url: Remote `URL`.
+        ///     - uri: custom URI for cases when URL is parsed incorrectly.
+        ///     - method: HTTP method.
+        ///     - headers: Custom HTTP headers.
+        ///     - body: Request body.
+        ///     - tlsConfiguration: Request TLS configuration
+        /// - throws:
+        ///     - `emptyScheme` if URL does not contain HTTP scheme.
+        ///     - `unsupportedScheme` if URL does contains unsupported HTTP scheme.
+        ///     - `emptyHost` if URL does not contains a host.
+        ///     - `missingSocketPath` if URL does not contains a socketPath as an encoded host.
+        public init(url: URL, uri: String, method: HTTPMethod = .GET, headers: HTTPHeaders = HTTPHeaders(), body: Body? = nil, tlsConfiguration: TLSConfiguration?) throws {
+            let deconstructedURL = try DeconstructedURL(url: url)
+
+            self.deconstructedURL = DeconstructedURL(scheme: deconstructedURL.scheme, connectionTarget: deconstructedURL.connectionTarget, uri: uri)
+
+            self.url = url
+            self.method = method
+            self.headers = headers
+            self.body = body
+            self.tlsConfiguration = tlsConfiguration
+        }
+
         /// Remote host, resolved from `URL`.
         public var host: String {
             self.deconstructedURL.connectionTarget.host ?? ""
